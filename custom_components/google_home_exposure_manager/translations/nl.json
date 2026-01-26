@@ -1,0 +1,113 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Google Home Exposure Manager",
+        "description": "Deze integratie helpt je te beheren welke entiteiten worden blootgesteld aan Google Assistant.",
+        "data": {}
+      },
+      "credentials": {
+        "title": "Serviceaccount Instellen",
+        "description": "Een Google Serviceaccount is vereist. Je kunt:\n\n1. Je serviceaccount JSON hieronder plakken\n2. Handmatig `SERVICE_ACCOUNT.json` in je configuratiemap plaatsen\n\nZie de [installatiehandleiding]({setup_guide_url}) voor instructies.",
+        "data": {
+          "service_account_json": "Serviceaccount JSON (plak inhoud)",
+          "manual_placement": "Ik plaats het bestand handmatig"
+        }
+      },
+      "project_id": {
+        "title": "Google Project Configuratie",
+        "description": "Gedetecteerde project-ID: `{project_id}`\n\nDit wordt gebruikt om de Google Assistant-integratie te configureren.",
+        "data": {
+          "project_id": "Project-ID"
+        }
+      }
+    },
+    "error": {
+      "invalid_json": "Ongeldig JSON-formaat. Controleer de serviceaccount JSON.",
+      "missing_project_id": "Kon project_id niet vinden in de serviceaccount JSON.",
+      "file_not_found": "SERVICE_ACCOUNT.json niet gevonden in configuratiemap.",
+      "write_error": "Kon configuratiebestanden niet schrijven. Controleer bestandsrechten.",
+      "already_configured": "Google Home Exposure Manager is al geconfigureerd.",
+      "no_credentials": "Plak de serviceaccount JSON of vink de optie voor handmatige plaatsing aan."
+    },
+    "abort": {
+      "already_configured": "Al geconfigureerd. Gebruik de opties om instellingen te wijzigen."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Instellingen",
+        "description": "**Huidige status:** {stats_text}\n\nOm te beheren welke entiteiten worden blootgesteld aan Google Assistant, gebruik het **Google Exposure** zijbalkpaneel.",
+        "data": {
+          "backups": "Back-ups maken voordat bestanden worden gewijzigd",
+          "auto_aliases": "Automatisch veelvoorkomende aliassen voor entiteiten genereren",
+          "show_panel": "Zijbalkpaneel tonen (herstart vereist)"
+        }
+      }
+    },
+    "error": {
+      "write_error": "Kon instellingen niet opslaan — controleer bestandsrechten"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "exposed_count": {
+        "name": "Blootgestelde Entiteiten"
+      },
+      "excluded_count": {
+        "name": "Uitgesloten Entiteiten"
+      },
+      "last_sync": {
+        "name": "Laatste Synchronisatie"
+      }
+    }
+  },
+  "selector": {},
+  "issues": {
+    "restart_required": {
+      "title": "Herstart Vereist",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Home Assistant Herstarten",
+            "description": "Google Assistant-configuratiebestanden zijn aangemaakt. Je moet Home Assistant herstarten zodat Google Assistant de nieuwe configuratie laadt.\n\nKom na het herstarten terug om te configureren welke entiteiten worden blootgesteld."
+          }
+        }
+      }
+    },
+    "setup_entities": {
+      "title": "Entiteiten Configureren",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Configureer Je Entiteiten",
+            "description": "Google Home Exposure Manager is geïnstalleerd! Gebruik het **Google Exposure** zijbalkpaneel om in te stellen welke entiteiten worden blootgesteld aan Google Assistant."
+          }
+        }
+      }
+    },
+    "restart_after_update": {
+      "title": "Herstart Aanbevolen",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Home Assistant Herstarten",
+            "description": "Google Home Exposure Manager is bijgewerkt of herladen. Een herstart wordt aanbevolen om ervoor te zorgen dat alle wijzigingen correct worden doorgevoerd.\n\nGa naar **Instellingen → Systeem → Herstarten** om Home Assistant te herstarten."
+          }
+        }
+      }
+    },
+    "panel_restart_required": {
+      "title": "Herstart Vereist voor Paneelwijziging",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Home Assistant Herstarten",
+            "description": "De zichtbaarheidsinstelling van het zijbalkpaneel is gewijzigd. Je moet Home Assistant herstarten om deze wijziging door te voeren.\n\nGa naar **Instellingen → Systeem → Herstarten** om Home Assistant te herstarten."
+          }
+        }
+      }
+    }
+  }
+}

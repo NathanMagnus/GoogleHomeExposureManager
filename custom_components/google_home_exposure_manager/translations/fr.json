@@ -1,0 +1,118 @@
+{
+  "_meta": {
+    "_comment": "string_status tracks review state: 'ai' = AI-generated (needs review), 'human' = manually reviewed. Strings not listed are assumed 'ai'.",
+    "language": "fr",
+    "last_updated": "2026-01-28",
+    "string_status": {}
+  },
+  "config": {
+    "step": {
+      "user": {
+        "title": "Google Home Exposure Manager",
+        "description": "Cette intégration vous aide à gérer quelles entités sont exposées à Google Assistant.",
+        "data": {}
+      },
+      "credentials": {
+        "title": "Configuration du compte de service",
+        "description": "Un compte de service Google est requis. Vous pouvez soit :\n\n1. Coller votre JSON de compte de service ci-dessous\n2. Placer manuellement `SERVICE_ACCOUNT.json` dans votre dossier de configuration\n\nConsultez le [guide d'installation]({setup_guide_url}) pour les instructions.",
+        "data": {
+          "service_account_json": "JSON du compte de service (coller le contenu)",
+          "manual_placement": "Je placerai le fichier manuellement"
+        }
+      },
+      "project_id": {
+        "title": "Configuration du projet Google",
+        "description": "ID de projet détecté : `{project_id}`\n\nCeci sera utilisé pour configurer l'intégration Google Assistant.",
+        "data": {
+          "project_id": "ID du projet"
+        }
+      }
+    },
+    "error": {
+      "invalid_json": "Format JSON invalide. Veuillez vérifier le JSON du compte de service.",
+      "missing_project_id": "Impossible de trouver project_id dans le JSON du compte de service.",
+      "file_not_found": "SERVICE_ACCOUNT.json introuvable dans le dossier de configuration.",
+      "write_error": "Impossible d'écrire les fichiers de configuration. Vérifiez les permissions.",
+      "already_configured": "Google Home Exposure Manager est déjà configuré.",
+      "no_credentials": "Veuillez coller le JSON du compte de service ou cocher l'option de placement manuel."
+    },
+    "abort": {
+      "already_configured": "Déjà configuré. Utilisez le flux d'options pour modifier les paramètres."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Paramètres",
+        "description": "**Statut actuel :** {stats_text}\n\nPour gérer quelles entités sont exposées à Google Assistant, utilisez le panneau latéral **Google Exposure**.",
+        "data": {
+          "backups": "Créer des sauvegardes avant de modifier les fichiers",
+          "show_panel": "Afficher le panneau latéral (redémarrage requis)"
+        }
+      }
+    },
+    "error": {
+      "write_error": "Impossible d'enregistrer les paramètres — vérifiez les permissions"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "exposed_count": {
+        "name": "Entités exposées"
+      },
+      "excluded_count": {
+        "name": "Entités exclues"
+      },
+      "last_sync": {
+        "name": "Dernière synchronisation"
+      }
+    }
+  },
+  "selector": {},
+  "issues": {
+    "restart_required": {
+      "title": "Redémarrage requis",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Redémarrer Home Assistant",
+            "description": "Les fichiers de configuration Google Assistant ont été créés. Vous devez redémarrer Home Assistant pour que Google Assistant charge la nouvelle configuration.\n\nAprès le redémarrage, revenez pour configurer quelles entités exposer."
+          }
+        }
+      }
+    },
+    "setup_entities": {
+      "title": "Configurer les entités",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Configurez vos entités",
+            "description": "Google Home Exposure Manager est installé ! Utilisez le panneau latéral **Google Exposure** pour définir quelles entités sont exposées à Google Assistant."
+          }
+        }
+      }
+    },
+    "restart_after_update": {
+      "title": "Redémarrage recommandé",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Redémarrer Home Assistant",
+            "description": "Google Home Exposure Manager a été mis à jour ou rechargé. Un redémarrage est recommandé pour s'assurer que toutes les modifications prennent effet correctement.\n\nAllez dans **Paramètres → Système → Redémarrer** pour redémarrer Home Assistant."
+          }
+        }
+      }
+    },
+    "panel_restart_required": {
+      "title": "Redémarrage requis pour le changement de panneau",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Redémarrer Home Assistant",
+            "description": "Le paramètre de visibilité du panneau latéral a été modifié. Vous devez redémarrer Home Assistant pour que ce changement prenne effet.\n\nAllez dans **Paramètres → Système → Redémarrer** pour redémarrer Home Assistant."
+          }
+        }
+      }
+    }
+  }
+}

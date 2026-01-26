@@ -1,0 +1,113 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Google Home Exposure Manager",
+        "description": "Diese Integration hilft dir zu verwalten, welche Entitäten für Google Assistant freigegeben werden.",
+        "data": {}
+      },
+      "credentials": {
+        "title": "Dienstkonto-Einrichtung",
+        "description": "Ein Google-Dienstkonto ist erforderlich. Du kannst entweder:\n\n1. Das Dienstkonto-JSON unten einfügen\n2. Die Datei `SERVICE_ACCOUNT.json` manuell in deinen Konfigurationsordner legen\n\nSiehe die [Einrichtungsanleitung]({setup_guide_url}) für Anweisungen.",
+        "data": {
+          "service_account_json": "Dienstkonto-JSON (Inhalt einfügen)",
+          "manual_placement": "Ich werde die Datei manuell platzieren"
+        }
+      },
+      "project_id": {
+        "title": "Google-Projektkonfiguration",
+        "description": "Erkannte Projekt-ID: `{project_id}`\n\nDiese wird zur Konfiguration der Google Assistant-Integration verwendet.",
+        "data": {
+          "project_id": "Projekt-ID"
+        }
+      }
+    },
+    "error": {
+      "invalid_json": "Ungültiges JSON-Format. Bitte überprüfe das Dienstkonto-JSON.",
+      "missing_project_id": "Projekt-ID im Dienstkonto-JSON nicht gefunden.",
+      "file_not_found": "SERVICE_ACCOUNT.json nicht im Konfigurationsordner gefunden.",
+      "write_error": "Konfigurationsdateien konnten nicht geschrieben werden. Überprüfe die Dateiberechtigungen.",
+      "already_configured": "Google Home Exposure Manager ist bereits konfiguriert.",
+      "no_credentials": "Bitte füge das Dienstkonto-JSON ein oder aktiviere die Option für manuelle Platzierung."
+    },
+    "abort": {
+      "already_configured": "Bereits konfiguriert. Verwende den Optionsablauf, um Einstellungen zu ändern."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Einstellungen",
+        "description": "**Aktueller Status:** {stats_text}\n\nUm zu verwalten, welche Entitäten für Google Assistant freigegeben werden, verwende das **Google Exposure** Seitenleisten-Panel.",
+        "data": {
+          "backups": "Backups vor Dateiänderungen erstellen",
+          "auto_aliases": "Automatisch gängige Aliase für Entitäten generieren",
+          "show_panel": "Seitenleisten-Panel anzeigen (Neustart erforderlich)"
+        }
+      }
+    },
+    "error": {
+      "write_error": "Einstellungen konnten nicht gespeichert werden — überprüfe die Dateiberechtigungen"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "exposed_count": {
+        "name": "Freigegebene Entitäten"
+      },
+      "excluded_count": {
+        "name": "Ausgeschlossene Entitäten"
+      },
+      "last_sync": {
+        "name": "Letzte Synchronisierung"
+      }
+    }
+  },
+  "selector": {},
+  "issues": {
+    "restart_required": {
+      "title": "Neustart erforderlich",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Home Assistant neu starten",
+            "description": "Google Assistant-Konfigurationsdateien wurden erstellt. Du musst Home Assistant neu starten, damit Google Assistant die neue Konfiguration lädt.\n\nKomme nach dem Neustart zurück, um zu konfigurieren, welche Entitäten freigegeben werden."
+          }
+        }
+      }
+    },
+    "setup_entities": {
+      "title": "Entitäten konfigurieren",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Deine Entitäten konfigurieren",
+            "description": "Google Home Exposure Manager ist installiert! Verwende das **Google Exposure** Seitenleisten-Panel, um einzurichten, welche Entitäten für Google Assistant freigegeben werden."
+          }
+        }
+      }
+    },
+    "restart_after_update": {
+      "title": "Neustart empfohlen",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Home Assistant neu starten",
+            "description": "Google Home Exposure Manager wurde aktualisiert oder neu geladen. Ein Neustart wird empfohlen, um sicherzustellen, dass alle Änderungen korrekt wirksam werden.\n\nGehe zu **Einstellungen → System → Neustart**, um Home Assistant neu zu starten."
+          }
+        }
+      }
+    },
+    "panel_restart_required": {
+      "title": "Neustart für Panel-Änderung erforderlich",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Home Assistant neu starten",
+            "description": "Die Sichtbarkeitseinstellung des Seitenleisten-Panels wurde geändert. Du musst Home Assistant neu starten, damit diese Änderung wirksam wird.\n\nGehe zu **Einstellungen → System → Neustart**, um Home Assistant neu zu starten."
+          }
+        }
+      }
+    }
+  }
+}

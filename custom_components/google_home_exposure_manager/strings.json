@@ -1,0 +1,113 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Google Home Exposure Manager",
+        "description": "This integration helps you manage which entities are exposed to Google Assistant.",
+        "data": {}
+      },
+      "credentials": {
+        "title": "Service Account Setup",
+        "description": "A Google Service Account is required. You can either:\n\n1. Paste your service account JSON below\n2. Manually place `SERVICE_ACCOUNT.json` in your config folder\n\nSee the [setup guide]({setup_guide_url}) for instructions.",
+        "data": {
+          "service_account_json": "Service Account JSON (paste contents)",
+          "manual_placement": "I'll place the file manually"
+        }
+      },
+      "project_id": {
+        "title": "Google Project Configuration",
+        "description": "Detected project ID: `{project_id}`\n\nThis will be used to configure the Google Assistant integration.",
+        "data": {
+          "project_id": "Project ID"
+        }
+      }
+    },
+    "error": {
+      "invalid_json": "Invalid JSON format. Please check the service account JSON.",
+      "missing_project_id": "Could not find project_id in the service account JSON.",
+      "file_not_found": "SERVICE_ACCOUNT.json not found in config folder.",
+      "write_error": "Could not write configuration files. Check file permissions.",
+      "already_configured": "Google Home Exposure Manager is already configured.",
+      "no_credentials": "Please paste the service account JSON or check the manual placement option."
+    },
+    "abort": {
+      "already_configured": "Already configured. Use the options flow to modify settings."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Settings",
+        "description": "**Current status:** {stats_text}\n\nTo manage which entities are exposed to Google Assistant, use the **Google Exposure** sidebar panel.",
+        "data": {
+          "backups": "Create backups before modifying files",
+          "auto_aliases": "Auto-generate common aliases for entities",
+          "show_panel": "Show sidebar panel (requires restart)"
+        }
+      }
+    },
+    "error": {
+      "write_error": "Could not save settings — check file permissions"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "exposed_count": {
+        "name": "Exposed Entities"
+      },
+      "excluded_count": {
+        "name": "Excluded Entities"
+      },
+      "last_sync": {
+        "name": "Last Sync"
+      }
+    }
+  },
+  "selector": {},
+  "issues": {
+    "restart_required": {
+      "title": "Restart Required",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Restart Home Assistant",
+            "description": "Google Assistant configuration files have been created. You need to restart Home Assistant for Google Assistant to load the new configuration.\n\nAfter restarting, come back to configure which entities to expose."
+          }
+        }
+      }
+    },
+    "setup_entities": {
+      "title": "Configure Entities",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Configure Your Entities",
+            "description": "Google Home Exposure Manager is installed! Use the **Google Exposure** sidebar panel to set up which entities are exposed to Google Assistant."
+          }
+        }
+      }
+    },
+    "restart_after_update": {
+      "title": "Restart Recommended",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Restart Home Assistant",
+            "description": "Google Home Exposure Manager has been updated or reloaded. A restart is recommended to ensure all changes take effect properly.\n\nGo to **Settings → System → Restart** to restart Home Assistant."
+          }
+        }
+      }
+    },
+    "panel_restart_required": {
+      "title": "Restart Required for Panel Change",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Restart Home Assistant",
+            "description": "The sidebar panel visibility setting has been changed. You need to restart Home Assistant for this change to take effect.\n\nGo to **Settings → System → Restart** to restart Home Assistant."
+          }
+        }
+      }
+    }
+  }
+}

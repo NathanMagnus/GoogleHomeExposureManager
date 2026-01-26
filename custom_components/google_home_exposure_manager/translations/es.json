@@ -1,0 +1,113 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Google Home Exposure Manager",
+        "description": "Esta integración te ayuda a gestionar qué entidades se exponen a Google Assistant.",
+        "data": {}
+      },
+      "credentials": {
+        "title": "Configuración de Cuenta de Servicio",
+        "description": "Se requiere una Cuenta de Servicio de Google. Puedes:\n\n1. Pegar el JSON de tu cuenta de servicio abajo\n2. Colocar manualmente `SERVICE_ACCOUNT.json` en tu carpeta de configuración\n\nConsulta la [guía de configuración]({setup_guide_url}) para instrucciones.",
+        "data": {
+          "service_account_json": "JSON de Cuenta de Servicio (pegar contenido)",
+          "manual_placement": "Colocaré el archivo manualmente"
+        }
+      },
+      "project_id": {
+        "title": "Configuración del Proyecto de Google",
+        "description": "ID de proyecto detectado: `{project_id}`\n\nEsto se usará para configurar la integración de Google Assistant.",
+        "data": {
+          "project_id": "ID de Proyecto"
+        }
+      }
+    },
+    "error": {
+      "invalid_json": "Formato JSON inválido. Por favor verifica el JSON de la cuenta de servicio.",
+      "missing_project_id": "No se pudo encontrar project_id en el JSON de la cuenta de servicio.",
+      "file_not_found": "SERVICE_ACCOUNT.json no encontrado en la carpeta de configuración.",
+      "write_error": "No se pudieron escribir los archivos de configuración. Verifica los permisos de archivo.",
+      "already_configured": "Google Home Exposure Manager ya está configurado.",
+      "no_credentials": "Por favor pega el JSON de la cuenta de servicio o marca la opción de colocación manual."
+    },
+    "abort": {
+      "already_configured": "Ya configurado. Usa el flujo de opciones para modificar la configuración."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Configuración",
+        "description": "**Estado actual:** {stats_text}\n\nPara gestionar qué entidades se exponen a Google Assistant, usa el panel lateral **Google Exposure**.",
+        "data": {
+          "backups": "Crear copias de seguridad antes de modificar archivos",
+          "auto_aliases": "Generar automáticamente alias comunes para entidades",
+          "show_panel": "Mostrar panel lateral (requiere reinicio)"
+        }
+      }
+    },
+    "error": {
+      "write_error": "No se pudieron guardar las configuraciones — verifica los permisos de archivo"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "exposed_count": {
+        "name": "Entidades Expuestas"
+      },
+      "excluded_count": {
+        "name": "Entidades Excluidas"
+      },
+      "last_sync": {
+        "name": "Última Sincronización"
+      }
+    }
+  },
+  "selector": {},
+  "issues": {
+    "restart_required": {
+      "title": "Reinicio Requerido",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Reiniciar Home Assistant",
+            "description": "Se han creado los archivos de configuración de Google Assistant. Necesitas reiniciar Home Assistant para que Google Assistant cargue la nueva configuración.\n\nDespués de reiniciar, vuelve para configurar qué entidades exponer."
+          }
+        }
+      }
+    },
+    "setup_entities": {
+      "title": "Configurar Entidades",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Configura Tus Entidades",
+            "description": "¡Google Home Exposure Manager está instalado! Usa el panel lateral **Google Exposure** para configurar qué entidades se exponen a Google Assistant."
+          }
+        }
+      }
+    },
+    "restart_after_update": {
+      "title": "Reinicio Recomendado",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Reiniciar Home Assistant",
+            "description": "Google Home Exposure Manager ha sido actualizado o recargado. Se recomienda un reinicio para asegurar que todos los cambios surtan efecto correctamente.\n\nVe a **Configuración → Sistema → Reiniciar** para reiniciar Home Assistant."
+          }
+        }
+      }
+    },
+    "panel_restart_required": {
+      "title": "Reinicio Requerido para Cambio de Panel",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Reiniciar Home Assistant",
+            "description": "La configuración de visibilidad del panel lateral ha sido cambiada. Necesitas reiniciar Home Assistant para que este cambio surta efecto.\n\nVe a **Configuración → Sistema → Reiniciar** para reiniciar Home Assistant."
+          }
+        }
+      }
+    }
+  }
+}

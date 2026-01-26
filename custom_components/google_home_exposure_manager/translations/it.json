@@ -1,0 +1,113 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Google Home Exposure Manager",
+        "description": "Questa integrazione ti aiuta a gestire quali entità sono esposte a Google Assistant.",
+        "data": {}
+      },
+      "credentials": {
+        "title": "Configurazione Account di Servizio",
+        "description": "È richiesto un Account di Servizio Google. Puoi:\n\n1. Incollare il JSON dell'account di servizio qui sotto\n2. Posizionare manualmente `SERVICE_ACCOUNT.json` nella tua cartella di configurazione\n\nConsulta la [guida alla configurazione]({setup_guide_url}) per le istruzioni.",
+        "data": {
+          "service_account_json": "JSON Account di Servizio (incolla il contenuto)",
+          "manual_placement": "Posizionerò il file manualmente"
+        }
+      },
+      "project_id": {
+        "title": "Configurazione Progetto Google",
+        "description": "ID progetto rilevato: `{project_id}`\n\nQuesto verrà utilizzato per configurare l'integrazione Google Assistant.",
+        "data": {
+          "project_id": "ID Progetto"
+        }
+      }
+    },
+    "error": {
+      "invalid_json": "Formato JSON non valido. Controlla il JSON dell'account di servizio.",
+      "missing_project_id": "Impossibile trovare project_id nel JSON dell'account di servizio.",
+      "file_not_found": "SERVICE_ACCOUNT.json non trovato nella cartella di configurazione.",
+      "write_error": "Impossibile scrivere i file di configurazione. Controlla i permessi dei file.",
+      "already_configured": "Google Home Exposure Manager è già configurato.",
+      "no_credentials": "Incolla il JSON dell'account di servizio o seleziona l'opzione di posizionamento manuale."
+    },
+    "abort": {
+      "already_configured": "Già configurato. Usa il flusso delle opzioni per modificare le impostazioni."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Impostazioni",
+        "description": "**Stato attuale:** {stats_text}\n\nPer gestire quali entità sono esposte a Google Assistant, usa il pannello laterale **Google Exposure**.",
+        "data": {
+          "backups": "Crea backup prima di modificare i file",
+          "auto_aliases": "Genera automaticamente alias comuni per le entità",
+          "show_panel": "Mostra pannello laterale (richiede riavvio)"
+        }
+      }
+    },
+    "error": {
+      "write_error": "Impossibile salvare le impostazioni — controlla i permessi dei file"
+    }
+  },
+  "entity": {
+    "sensor": {
+      "exposed_count": {
+        "name": "Entità Esposte"
+      },
+      "excluded_count": {
+        "name": "Entità Escluse"
+      },
+      "last_sync": {
+        "name": "Ultima Sincronizzazione"
+      }
+    }
+  },
+  "selector": {},
+  "issues": {
+    "restart_required": {
+      "title": "Riavvio Richiesto",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Riavvia Home Assistant",
+            "description": "I file di configurazione di Google Assistant sono stati creati. Devi riavviare Home Assistant affinché Google Assistant carichi la nuova configurazione.\n\nDopo il riavvio, torna per configurare quali entità esporre."
+          }
+        }
+      }
+    },
+    "setup_entities": {
+      "title": "Configura Entità",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Configura le Tue Entità",
+            "description": "Google Home Exposure Manager è installato! Usa il pannello laterale **Google Exposure** per configurare quali entità sono esposte a Google Assistant."
+          }
+        }
+      }
+    },
+    "restart_after_update": {
+      "title": "Riavvio Consigliato",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Riavvia Home Assistant",
+            "description": "Google Home Exposure Manager è stato aggiornato o ricaricato. Si consiglia un riavvio per assicurarsi che tutte le modifiche abbiano effetto correttamente.\n\nVai su **Impostazioni → Sistema → Riavvia** per riavviare Home Assistant."
+          }
+        }
+      }
+    },
+    "panel_restart_required": {
+      "title": "Riavvio Richiesto per Modifica Pannello",
+      "fix_flow": {
+        "step": {
+          "confirm": {
+            "title": "Riavvia Home Assistant",
+            "description": "L'impostazione di visibilità del pannello laterale è stata modificata. Devi riavviare Home Assistant affinché questa modifica abbia effetto.\n\nVai su **Impostazioni → Sistema → Riavvia** per riavviare Home Assistant."
+          }
+        }
+      }
+    }
+  }
+}
