@@ -11,7 +11,7 @@
   <a href="https://github.com/NathanMagnus/GoogleHomeExposureManager/actions/workflows/ci.yml"><img src="https://github.com/NathanMagnus/GoogleHomeExposureManager/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
 </p>
 
-> ⚠️ **Notice:** This integration was 100% vibe coded with AI assistance. While it includes safety features like automatic backups and atomic writes, it has not been extensively tested in production environments. **Use at your own risk.** Always maintain backups of your Home Assistant configuration.
+> **Note:** This integration was developed with AI assistance. It includes comprehensive safety features — automatic backups, atomic writes, preview before save, and full test coverage — but has not yet been widely deployed. Feedback and bug reports are welcome via [GitHub Issues](https://github.com/NathanMagnus/GoogleHomeExposureManager/issues).
 
 > ⚠️ **Prerequisite:** This integration requires the **[Manual Google Assistant Integration](https://www.home-assistant.io/integrations/google_assistant/)** to be set up first. This is a core Home Assistant integration ([source code](https://github.com/home-assistant/core/tree/dev/homeassistant/components/google_assistant)) that connects your Home Assistant to Google Home. This HACS integration provides a **UI to manage which entities are exposed** — it does not replace the Google Assistant integration itself.
 
@@ -30,8 +30,17 @@ A Home Assistant custom integration providing a UI to control which entities are
 
 ## Screenshots
 
-<!-- TODO: Add screenshots after UI is finalized -->
-*Screenshots coming soon - the integration provides a sidebar panel for managing entity exposure.*
+### Sidebar Panel
+<img src="screenshots/SideBar.png" alt="Sidebar showing Google Exposure entry" width="200">
+
+### Devices & Entities
+<img src="screenshots/DeviceAndEntities.png" alt="Devices and entities view with exposure controls" width="800">
+
+### Bulk Rules
+<img src="screenshots/BulkRules.png" alt="Bulk rules configuration with domain, area, and pattern controls" width="800">
+
+### Preview & Save
+<img src="screenshots/PreviewAndSave.png" alt="Preview changes before saving" width="500">
 
 ### Planned Features
 
