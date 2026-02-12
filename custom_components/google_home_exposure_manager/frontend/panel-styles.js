@@ -11,10 +11,40 @@ export const panelStyles = css`
     background: var(--primary-background-color);
   }
 
+  /* Mobile header with menu button */
+  .mobile-header {
+    display: flex;
+    align-items: center;
+    height: 56px;
+    padding: 0 4px;
+    background: var(--app-header-background-color, var(--primary-background-color));
+    border-bottom: 1px solid var(--divider-color);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+
+  .mobile-header ha-menu-button {
+    color: var(--primary-text-color);
+  }
+
+  .mobile-header-title {
+    flex: 1;
+    font-size: 20px;
+    font-weight: 400;
+    color: var(--primary-text-color);
+    margin-left: 8px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .container {
     max-width: 1200px;
     margin: 0 auto;
     padding: 16px;
+    box-sizing: border-box;
+    overflow-x: auto;
   }
 
   .header {
@@ -45,6 +75,17 @@ export const panelStyles = css`
     border-bottom: 1px solid var(--divider-color);
     margin-bottom: 16px;
     overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .tabs::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .tabs::-webkit-scrollbar-thumb {
+    background: var(--divider-color);
+    border-radius: 2px;
   }
 
   .tab {
@@ -55,6 +96,14 @@ export const panelStyles = css`
     font-weight: 500;
     white-space: nowrap;
     transition: all 0.2s;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 600px) {
+    .tab {
+      padding: 12px 16px;
+      font-size: 14px;
+    }
   }
 
   .tab:hover {
@@ -138,6 +187,8 @@ export const panelStyles = css`
     justify-content: space-between;
     padding: 12px 16px;
     border-bottom: 1px solid var(--divider-color);
+    min-width: 0;
+    gap: 12px;
   }
 
   .entity-item:last-child {
@@ -149,6 +200,22 @@ export const panelStyles = css`
     flex-direction: column;
     gap: 2px;
     flex: 1;
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Mobile responsive: stack entity item vertically */
+  @media (max-width: 600px) {
+    .entity-item {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .entity-status {
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
   }
 
   .entity-name-row {
@@ -223,6 +290,7 @@ export const panelStyles = css`
   .entity-status {
     display: flex;
     gap: 8px;
+    flex-shrink: 0;
   }
 
   .status-btn {
@@ -278,6 +346,18 @@ export const panelStyles = css`
     margin-top: 24px;
     padding-top: 16px;
     border-top: 1px solid var(--divider-color);
+    flex-wrap: wrap;
+  }
+
+  @media (max-width: 600px) {
+    .action-buttons {
+      justify-content: stretch;
+    }
+
+    .action-buttons .btn {
+      flex: 1;
+      min-width: 120px;
+    }
   }
 
   .btn {
@@ -578,6 +658,7 @@ export const panelStyles = css`
     background: var(--secondary-background-color);
     cursor: pointer;
     user-select: none;
+    gap: 12px;
   }
 
   .device-header:hover {
@@ -590,6 +671,25 @@ export const panelStyles = css`
     gap: 12px;
     flex: 1;
     min-width: 0;
+    overflow: hidden;
+  }
+
+  /* Mobile responsive: stack device header */
+  @media (max-width: 600px) {
+    .device-header {
+      flex-direction: column;
+      align-items: stretch;
+      gap: 8px;
+    }
+
+    .device-header .entity-status {
+      justify-content: flex-end;
+      flex-wrap: wrap;
+    }
+
+    .device-entities .entity-item {
+      padding-left: 16px;
+    }
   }
 
   .expand-icon {
@@ -882,11 +982,13 @@ export const panelStyles = css`
     align-items: center;
     gap: 16px;
     margin-bottom: 16px;
+    flex-wrap: wrap;
   }
 
   .search-row .search-box {
     flex: 1;
     margin-bottom: 0;
+    min-width: 200px;
   }
 
   .show-filtered-toggle {
@@ -897,6 +999,17 @@ export const panelStyles = css`
     color: var(--secondary-text-color);
     white-space: nowrap;
     cursor: pointer;
+  }
+
+  @media (max-width: 600px) {
+    .search-row {
+      gap: 8px;
+    }
+
+    .search-row .search-box {
+      min-width: 100%;
+      order: -1;
+    }
   }
 
   .show-filtered-toggle input {

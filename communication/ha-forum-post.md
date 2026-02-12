@@ -38,4 +38,4 @@ I built a custom integration that adds a UI for managing which entities are expo
 
 GitHub: https://github.com/NathanMagnus/GoogleHomeExposureManager
 
-Feedback, bug reports, and contributions welcome. This is v0.1.0 -- I'd especially appreciate hearing from anyone who tries it on their setup.
+Full disclosure: this was vibe coded with AI assistance, but it has full test coverage, automatic backups before any file changes, and atomic writes to prevent corruption. Feedback, bug reports, and contributions welcome. This is v0.1.0 -- I'd especially appreciate hearing from anyone who tries it on their setup.

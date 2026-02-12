@@ -24,4 +24,4 @@ If you use the manual Google Assistant integration, you know the pain of editing
 
 Requires HA 2024.1.0+ and the manual Google Assistant integration.
 
-This is v0.1.0 -- feedback and bug reports welcome. GitHub link in the HACS listing or here: https://github.com/NathanMagnus/GoogleHomeExposureManager
+Full disclosure: this was vibe coded with AI assistance, but it has full test coverage, automatic backups, and atomic writes so it shouldn't break anything. This is v0.1.0 -- feedback and bug reports welcome. GitHub link in the HACS listing or here: https://github.com/NathanMagnus/GoogleHomeExposureManager

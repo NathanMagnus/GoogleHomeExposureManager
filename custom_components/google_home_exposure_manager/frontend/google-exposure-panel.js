@@ -704,9 +704,22 @@ class GoogleExposurePanel extends LitElement {
   // Main Render
   // ============================================================
 
+  _renderMobileHeader() {
+    if (!this.narrow) {
+      return "";
+    }
+    return html`
+      <div class="mobile-header">
+        <ha-menu-button .hass=${this.hass} .narrow=${this.narrow}></ha-menu-button>
+        <span class="mobile-header-title">Google Home Exposure</span>
+      </div>
+    `;
+  }
+
   render() {
     if (this._loading) {
       return html`
+        ${this._renderMobileHeader()}
         <div class="container">
           <div class="loading">Loading...</div>
         </div>
@@ -720,7 +733,9 @@ class GoogleExposurePanel extends LitElement {
     ];
 
     return html`
+      ${this._renderMobileHeader()}
       <div class="container">
+        ${!this.narrow ? html`
         <div class="header">
           <h1>
             <svg class="header-icon" viewBox="0 0 128 128">
@@ -746,6 +761,7 @@ class GoogleExposurePanel extends LitElement {
             Google Home Exposure Manager
           </h1>
         </div>
+        ` : ""}
 
         ${this._error ? html`
           <div class="error-banner">${this._error}</div>
