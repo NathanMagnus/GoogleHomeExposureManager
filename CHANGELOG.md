@@ -7,18 +7,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Added
-- GitHub Actions workflows for validation (HACS Action + Hassfest)
-- GitHub Actions workflow for automated releases
-- CONTRIBUTING.md with development guidelines and HACS submission checklist
-- Unsaved changes confirmation dialog when switching tabs
-- Browser beforeunload warning when leaving page with unsaved changes
+## [0.1.1] - 2026-02-24
 
 ### Changed
-- Updated HACS badge link to point to hacs.xyz
-- Added validation status badge to README
-- Cleaned up hacs.json (removed plugin-only keys)
-- Fixed placeholder URLs in README
+- Improved mobile UI: added menu button for sidebar navigation
+- Fixed horizontal scrolling issues on mobile devices
+- Responsive layout improvements for narrow screens
+
+### Fixed
+- Mobile app could not return to sidebar due to missing menu icon
+- Entity rows no longer overflow screen on mobile
 
 ## [0.1.0] - 2026-01-27
 
