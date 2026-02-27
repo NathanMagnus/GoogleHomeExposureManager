@@ -414,8 +414,8 @@ class GoogleExposurePanel extends LitElement {
 
   /**
    * Recalculate device state based on entity states.
-   * If all non-filtered entities are selected with same value, device becomes implied.
-   * Otherwise device becomes unset (unless already selected).
+   * If all non-filtered entities have the same explicit value, device shows that state.
+   * If entities are mixed, device state is cleared (no highlight).
    */
   _recalculateDeviceState(deviceId) {
     const deviceEntities = this._entities.filter(e => e.device_id === deviceId);
@@ -425,22 +425,15 @@ class GoogleExposurePanel extends LitElement {
       return;
     }
     
-    const deviceOverride = this._getDeviceOverrideInfo(deviceId);
-    
-    // Don't override a selected device state
-    if (deviceOverride?.source === 'selected') {
-      return;
-    }
-    
-    // Check if all active entities are selected with the same expose value
-    let allSelected = true;
+    // Check entity states
+    let allHaveOverride = true;
     let allSameValue = true;
     let firstValue = null;
     
     for (const entity of activeEntities) {
       const override = this._getEntityOverrideInfo(entity.entity_id);
-      if (!override || override.source !== 'selected') {
-        allSelected = false;
+      if (!override) {
+        allHaveOverride = false;
         break;
       }
       if (firstValue === null) {
@@ -452,15 +445,18 @@ class GoogleExposurePanel extends LitElement {
     }
     
     const overrides = { ...(this._pendingConfig?.device_overrides || {}) };
+    const currentDeviceOverride = this._getDeviceOverrideInfo(deviceId);
     
-    if (allSelected && allSameValue && firstValue !== null) {
-      // All entities selected with same value - device becomes implied
-      overrides[deviceId] = { expose: firstValue, source: 'implied' };
-    } else {
-      // Mixed or not all selected - device becomes unset (if it was implied)
-      if (deviceOverride?.source === 'implied') {
-        delete overrides[deviceId];
+    if (allHaveOverride && allSameValue && firstValue !== null) {
+      // All entities have same value - device shows implied state
+      // But only if not already selected with this same value
+      if (currentDeviceOverride?.source !== 'selected' || currentDeviceOverride?.expose !== firstValue) {
+        overrides[deviceId] = { expose: firstValue, source: 'implied' };
       }
+    } else {
+      // Mixed or not all set - clear device state (even if it was selected)
+      // This ensures the UI reflects the actual mixed state
+      delete overrides[deviceId];
     }
     
     this._pendingConfig.device_overrides = overrides;
