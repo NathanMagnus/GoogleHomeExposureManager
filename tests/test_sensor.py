@@ -40,10 +40,10 @@ def mock_rule_engine() -> MagicMock:
     engine = MagicMock()
     engine.compute_entities = AsyncMock(
         return_value=(
-            ["light.living_room", "switch.kitchen"],  # exposed
-            ["sensor.temperature"],  # excluded
+            ["light.living_room", "switch.kitchen"],  # result.exposed
+            ["sensor.temperature"],  # result.excluded
             [],  # explicit_exclusions
-            ["fan.bedroom"],  # unset
+            ["fan.bedroom"],  # result.unset
         )
     )
     return engine
@@ -132,7 +132,7 @@ class TestExposedEntitiesSensor:
         sensor = ExposedEntitiesSensor(mock_hass, mock_entry, mock_entry_data)
         await sensor.async_update()
 
-        assert sensor.native_value == 2  # Two exposed entities
+        assert sensor.native_value == 2  # Two result.exposed entities
         assert "domains" in sensor.extra_state_attributes
         assert sensor.extra_state_attributes["domains"] == {"light": 1, "switch": 1}
         assert sensor.extra_state_attributes["total_excluded"] == 1
@@ -179,7 +179,7 @@ class TestExcludedEntitiesSensor:
         sensor = ExcludedEntitiesSensor(mock_hass, mock_entry, mock_entry_data)
         await sensor.async_update()
 
-        assert sensor.native_value == 1  # One excluded entity
+        assert sensor.native_value == 1  # One result.excluded entity
         assert "domains" in sensor.extra_state_attributes
         assert sensor.extra_state_attributes["domains"] == {"sensor": 1}
         assert sensor.extra_state_attributes["total_exposed"] == 2

@@ -287,13 +287,11 @@ class GoogleHomeExposureManagerOptionsFlow(OptionsFlow):
         stats_text = ""
         if rule_engine:
             try:
-                exposed, excluded, _, unset, _ = await rule_engine.compute_entities(
-                    stored_data
-                )
+                result = await rule_engine.compute_entities(stored_data)
                 stats_text = (
-                    f"**{len(exposed)}** entities exposed · "
-                    f"**{len(excluded)}** excluded · "
-                    f"**{len(unset)}** unset"
+                    f"**{len(result.exposed)}** entities exposed · "
+                    f"**{len(result.excluded)}** excluded · "
+                    f"**{len(result.unset)}** unset"
                 )
             except Exception:
                 stats_text = "Unable to compute stats"

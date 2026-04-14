@@ -249,13 +249,7 @@ async def websocket_compute_preview(
     new_config: dict[str, Any] = msg["config"]
 
     try:
-        (
-            exposed,
-            excluded,
-            _,
-            unset,
-            exclusion_reasons,
-        ) = await rule_engine.compute_entities(new_config)
+        result = await rule_engine.compute_entities(new_config)
 
         # Get entity configs (aliases, names, rooms)
         new_entity_config = new_config.get(CONF_ENTITY_CONFIG, {})
@@ -263,7 +257,7 @@ async def websocket_compute_preview(
 
         # Build exposed entities with their configs
         exposed_with_config = []
-        for entity_id in exposed:
+        for entity_id in result.exposed:
             config = new_entity_config.get(entity_id, {})
             exposed_with_config.append(
                 {
@@ -323,10 +317,10 @@ async def websocket_compute_preview(
         connection.send_result(
             msg["id"],
             {
-                "exposed": exposed,
-                "excluded": excluded,
-                "unset": unset,
-                "exclusion_reasons": exclusion_reasons,
+                "exposed": result.exposed,
+                "excluded": result.excluded,
+                "unset": result.unset,
+                "exclusion_reasons": result.exclusion_reasons,
                 "exposed_with_config": exposed_with_config,
                 "config_changes": config_changes,
             },
@@ -359,13 +353,7 @@ async def websocket_save_config(
 
     try:
         # Compute what to write
-        (
-            exposed,
-            excluded,
-            explicit_exclusions,
-            _,
-            _,
-        ) = await rule_engine.compute_entities(new_config)
+        result = await rule_engine.compute_entities(new_config)
 
         # Get entity_config (name, aliases, room)
         entity_config = new_config.get(CONF_ENTITY_CONFIG, {})
@@ -377,12 +365,12 @@ async def websocket_save_config(
 
         # Write entities file with entity_config
         await yaml_manager.write_entities_file(
-            exposed, excluded, explicit_exclusions, entity_config
+            result.exposed, result.excluded, result.explicit_exclusions, entity_config
         )
         _LOGGER.info(
             "Saved configuration: %d entities exposed, %d excluded, %d with custom config",
-            len(exposed),
-            len(excluded),
+            len(result.exposed),
+            len(result.excluded),
             len(entity_config),
         )
 

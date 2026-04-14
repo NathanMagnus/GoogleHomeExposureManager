@@ -124,21 +124,19 @@ class ExposedEntitiesSensor(ExposureBaseSensor):
 
         stored_data = self._entry_data.get("data", {})
         try:
-            exposed, excluded, _, unset = await rule_engine.compute_entities(
-                stored_data
-            )
-            self._attr_native_value = len(exposed)
+            result = await rule_engine.compute_entities(stored_data)
+            self._attr_native_value = len(result.exposed)
 
             # Group by domain for attributes using shared helper
             domains = {
                 domain: len(entities)
-                for domain, entities in group_entities_by_domain(exposed).items()
+                for domain, entities in group_entities_by_domain(result.exposed).items()
             }
 
             self._attr_extra_state_attributes = {
                 "domains": domains,
-                "total_excluded": len(excluded),
-                "total_unset": len(unset),
+                "total_excluded": len(result.excluded),
+                "total_unset": len(result.unset),
             }
         except Exception as ex:
             _LOGGER.error("Failed to compute exposed entities: %s", ex)
@@ -174,21 +172,19 @@ class ExcludedEntitiesSensor(ExposureBaseSensor):
 
         stored_data = self._entry_data.get("data", {})
         try:
-            exposed, excluded, _, unset = await rule_engine.compute_entities(
-                stored_data
-            )
-            self._attr_native_value = len(excluded)
+            result = await rule_engine.compute_entities(stored_data)
+            self._attr_native_value = len(result.excluded)
 
             # Group by domain for attributes using shared helper
             domains = {
                 domain: len(entities)
-                for domain, entities in group_entities_by_domain(excluded).items()
+                for domain, entities in group_entities_by_domain(result.excluded).items()
             }
 
             self._attr_extra_state_attributes = {
                 "domains": domains,
-                "total_exposed": len(exposed),
-                "total_unset": len(unset),
+                "total_exposed": len(result.exposed),
+                "total_unset": len(result.unset),
             }
         except Exception as ex:
             _LOGGER.error("Failed to compute excluded entities: %s", ex)

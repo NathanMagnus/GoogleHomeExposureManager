@@ -391,10 +391,10 @@ class TestOptionsFlow:
         mock_rule_engine = MagicMock()
         mock_rule_engine.compute_entities = AsyncMock(
             return_value=(
-                ["light.one", "light.two"],  # exposed
-                ["sensor.excluded"],  # excluded
+                ["light.one", "light.two"],  # result.exposed
+                ["sensor.excluded"],  # result.excluded
                 set(),  # explicit_exclusions
-                ["fan.unset"],  # unset
+                ["fan.unset"],  # result.unset
                 {},  # exclusion_reasons
             )
         )
@@ -422,7 +422,7 @@ class TestOptionsFlow:
             assert "stats_text" in result["description_placeholders"]
             # Stats should show: 2 exposed, 1 excluded, 1 unset
             stats = result["description_placeholders"]["stats_text"]
-            assert "2" in stats  # exposed count
+            assert "2" in stats  # result.exposed count
 
 
 class TestDetectGoogleAssistant:
