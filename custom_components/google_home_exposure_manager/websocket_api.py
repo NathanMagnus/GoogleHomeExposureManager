@@ -325,9 +325,16 @@ async def websocket_compute_preview(
                 "config_changes": config_changes,
             },
         )
+    except ValueError as ex:
+        _LOGGER.warning("Invalid configuration for preview: %s", ex)
+        connection.send_error(
+            msg["id"], "invalid_config", f"Invalid configuration: {ex}"
+        )
     except Exception as ex:
-        _LOGGER.exception("Failed to compute preview")
-        connection.send_error(msg["id"], "compute_error", str(ex))
+        _LOGGER.exception("Failed to compute preview: %s", ex)
+        connection.send_error(
+            msg["id"], "compute_error", f"Failed to compute preview: {ex}"
+        )
 
 
 @websocket_api.websocket_command(
@@ -381,9 +388,17 @@ async def websocket_save_config(
 
         connection.send_result(msg["id"], {"success": True})
 
+    except OSError as ex:
+        _LOGGER.error("Failed to write configuration file: %s", ex)
+        connection.send_error(
+            msg["id"], "write_error", f"Failed to write configuration: {ex}"
+        )
+    except ValueError as ex:
+        _LOGGER.warning("Invalid configuration: %s", ex)
+        connection.send_error(msg["id"], "invalid_config", f"Invalid configuration: {ex}")
     except Exception as ex:
-        _LOGGER.exception("Failed to save config")
-        connection.send_error(msg["id"], "save_error", str(ex))
+        _LOGGER.exception("Failed to save configuration: %s", ex)
+        connection.send_error(msg["id"], "save_error", f"Failed to save: {ex}")
 
 
 @websocket_api.websocket_command(
@@ -435,6 +450,14 @@ async def websocket_handle_migration(
 
         connection.send_result(msg["id"], {"success": True})
 
+    except FileNotFoundError as ex:
+        _LOGGER.error("Migration source file not found: %s", ex)
+        connection.send_error(
+            msg["id"], "file_not_found", f"Source file not found: {ex}"
+        )
+    except OSError as ex:
+        _LOGGER.error("Failed to write during migration: %s", ex)
+        connection.send_error(msg["id"], "write_error", f"Migration write failed: {ex}")
     except Exception as ex:
-        _LOGGER.exception("Migration failed")
-        connection.send_error(msg["id"], "migration_error", str(ex))
+        _LOGGER.exception("Migration failed: %s", ex)
+        connection.send_error(msg["id"], "migration_error", f"Migration failed: {ex}")
