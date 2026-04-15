@@ -388,14 +388,16 @@ class TestOptionsFlow:
 
     async def test_options_flow_with_rule_engine_stats(self) -> None:
         """Test options flow displays stats from rule engine."""
+        from custom_components.google_home_exposure_manager.rule_engine import ComputeEntitiesResult
+
         mock_rule_engine = MagicMock()
         mock_rule_engine.compute_entities = AsyncMock(
-            return_value=(
-                ["light.one", "light.two"],  # result.exposed
-                ["sensor.excluded"],  # result.excluded
-                set(),  # explicit_exclusions
-                ["fan.unset"],  # result.unset
-                {},  # exclusion_reasons
+            return_value=ComputeEntitiesResult(
+                exposed=["light.one", "light.two"],
+                excluded=["sensor.excluded"],
+                explicit_exclusions=set(),
+                unset=["fan.unset"],
+                exclusion_reasons={},
             )
         )
 

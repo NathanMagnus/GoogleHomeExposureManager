@@ -11,7 +11,6 @@ select = [
     "B",    # flake8-bugbear
     "A",    # flake8-builtins
     "C4",   # flake8-comprehensions
-    "DTZ",  # flake8-datetimez
     "T10",  # flake8-debugger
     "PIE",  # flake8-pie
     "T20",  # flake8-print
@@ -24,10 +23,14 @@ select = [
 
 # Ignore specific rules
 ignore = [
-    "E501",   # line too long (black handles this)
+    "E501",    # line too long (black handles this)
     "PLR0913", # too many arguments
     "PLR2004", # magic value comparison
+    "PLR0911", # too many return statements
+    "PLR0912", # too many branches
     "RET504",  # unnecessary variable assignment before return
+    "PLC0415", # import should be at top-level (intentional for optional dependencies)
+    "DTZ005",  # datetime.now() without tz (Home Assistant handles this)
 ]
 
 # Exclude a variety of commonly ignored directories.

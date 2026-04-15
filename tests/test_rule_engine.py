@@ -384,8 +384,8 @@ class TestRuleEngineUpdateData:
         }
 
         engine = RuleEngine(mock_hass, initial_data)
-        exposed1, _, _, _, _ = await engine.compute_entities()
-        assert len(exposed1) == 0  # Nothing result.exposed
+        result1 = await engine.compute_entities()
+        assert len(result1.exposed) == 0  # Nothing exposed
 
         # Update data
         new_data: dict[str, Any] = {
@@ -399,5 +399,5 @@ class TestRuleEngineUpdateData:
         }
         engine.update_data(new_data)
 
-        exposed2, _, _, _, _ = await engine.compute_entities()
-        assert len(exposed2) > 0  # Now lights are result.exposed
+        result2 = await engine.compute_entities()
+        assert len(result2.exposed) > 0  # Now lights are exposed

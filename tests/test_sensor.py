@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from custom_components.google_home_exposure_manager.const import DOMAIN
+from custom_components.google_home_exposure_manager.rule_engine import ComputeEntitiesResult
 from custom_components.google_home_exposure_manager.sensor import (
     ExcludedEntitiesSensor,
     ExposedEntitiesSensor,
@@ -39,11 +40,12 @@ def mock_rule_engine() -> MagicMock:
     """Create a mock rule engine."""
     engine = MagicMock()
     engine.compute_entities = AsyncMock(
-        return_value=(
-            ["light.living_room", "switch.kitchen"],  # result.exposed
-            ["sensor.temperature"],  # result.excluded
-            [],  # explicit_exclusions
-            ["fan.bedroom"],  # result.unset
+        return_value=ComputeEntitiesResult(
+            exposed=["light.living_room", "switch.kitchen"],
+            excluded=["sensor.temperature"],
+            explicit_exclusions=set(),
+            unset=["fan.bedroom"],
+            exclusion_reasons={},
         )
     )
     return engine
