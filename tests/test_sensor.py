@@ -8,6 +8,7 @@ from unittest.mock import AsyncMock, MagicMock, patch
 import pytest
 
 from custom_components.google_home_exposure_manager.const import DOMAIN
+from custom_components.google_home_exposure_manager.rule_engine import ComputeEntitiesResult
 from custom_components.google_home_exposure_manager.sensor import (
     ExcludedEntitiesSensor,
     ExposedEntitiesSensor,
@@ -39,11 +40,12 @@ def mock_rule_engine() -> MagicMock:
     """Create a mock rule engine."""
     engine = MagicMock()
     engine.compute_entities = AsyncMock(
-        return_value=(
-            ["light.living_room", "switch.kitchen"],  # exposed
-            ["sensor.temperature"],  # excluded
-            [],  # explicit_exclusions
-            ["fan.bedroom"],  # unset
+        return_value=ComputeEntitiesResult(
+            exposed=["light.living_room", "switch.kitchen"],
+            excluded=["sensor.temperature"],
+            explicit_exclusions=set(),
+            unset=["fan.bedroom"],
+            exclusion_reasons={},
         )
     )
     return engine
@@ -132,7 +134,7 @@ class TestExposedEntitiesSensor:
         sensor = ExposedEntitiesSensor(mock_hass, mock_entry, mock_entry_data)
         await sensor.async_update()
 
-        assert sensor.native_value == 2  # Two exposed entities
+        assert sensor.native_value == 2  # Two result.exposed entities
         assert "domains" in sensor.extra_state_attributes
         assert sensor.extra_state_attributes["domains"] == {"light": 1, "switch": 1}
         assert sensor.extra_state_attributes["total_excluded"] == 1
@@ -179,7 +181,7 @@ class TestExcludedEntitiesSensor:
         sensor = ExcludedEntitiesSensor(mock_hass, mock_entry, mock_entry_data)
         await sensor.async_update()
 
-        assert sensor.native_value == 1  # One excluded entity
+        assert sensor.native_value == 1  # One result.excluded entity
         assert "domains" in sensor.extra_state_attributes
         assert sensor.extra_state_attributes["domains"] == {"sensor": 1}
         assert sensor.extra_state_attributes["total_exposed"] == 2

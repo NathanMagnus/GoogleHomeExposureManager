@@ -7,8 +7,6 @@ import logging
 from pathlib import Path
 from typing import Any, Final
 
-import voluptuous as vol
-
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
@@ -23,6 +21,7 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
+import voluptuous as vol
 
 from .const import (
     CONF_AUTO_ALIASES,
@@ -129,9 +128,7 @@ class GoogleHomeExposureManagerConfigFlow(ConfigFlow, domain=DOMAIN):
                     self._service_account_data = json.loads(service_account_json)
 
                     # Validate it looks like a service account
-                    if not isinstance(self._service_account_data, dict):
-                        errors["base"] = "invalid_json"
-                    elif (
+                    if not isinstance(self._service_account_data, dict) or (
                         "type" in self._service_account_data
                         and self._service_account_data["type"] != "service_account"
                     ):
@@ -287,13 +284,11 @@ class GoogleHomeExposureManagerOptionsFlow(OptionsFlow):
         stats_text = ""
         if rule_engine:
             try:
-                exposed, excluded, _, unset, _ = await rule_engine.compute_entities(
-                    stored_data
-                )
+                result = await rule_engine.compute_entities(stored_data)
                 stats_text = (
-                    f"**{len(exposed)}** entities exposed · "
-                    f"**{len(excluded)}** excluded · "
-                    f"**{len(unset)}** unset"
+                    f"**{len(result.exposed)}** entities exposed · "
+                    f"**{len(result.excluded)}** excluded · "
+                    f"**{len(result.unset)}** unset"
                 )
             except Exception:
                 stats_text = "Unable to compute stats"

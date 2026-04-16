@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from dataclasses import dataclass
 import logging
 from typing import Any, Final
 
@@ -22,13 +23,48 @@ from .const import (
     CONF_EXPOSE_DOMAINS,
     SUPPORTED_DOMAINS,
 )
-from .helpers import (
-    group_entities_by_domain,
-    match_glob_pattern,
-    validate_glob_pattern,
-)
+from .helpers import group_entities_by_domain, match_glob_pattern, validate_glob_pattern
 
 _LOGGER: Final = logging.getLogger(__name__)
+
+# Constants for sample sizes
+SAMPLE_EXPOSED_LIMIT: Final = 20
+SAMPLE_EXCLUDED_LIMIT: Final = 10
+
+
+@dataclass
+class ComputeEntitiesResult:
+    """Result from computing entity exposure.
+
+    Attributes:
+        exposed: List of entity IDs that should be exposed to Google Assistant.
+        excluded: List of entity IDs that should be excluded.
+        explicit_exclusions: Set of entity IDs explicitly excluded by user.
+        unset: List of entity IDs that don't match any exposure rules.
+        exclusion_reasons: Dict mapping reason types to lists of excluded entity IDs.
+    """
+
+    exposed: list[str]
+    excluded: list[str]
+    explicit_exclusions: set[str]
+    unset: list[str]
+    exclusion_reasons: dict[str, list[str]]
+
+
+def _is_selected_override(data: dict[str, Any]) -> bool:
+    """Check if override is an explicit user selection.
+
+    "implied" overrides are computed from device state and should be ignored.
+    Legacy data without "source" is treated as "selected" for backwards compatibility.
+
+    Args:
+        data: The override data dictionary.
+
+    Returns:
+        True if this is an explicit user selection, False if implied.
+    """
+    source = data.get("source", "selected")  # Legacy = selected
+    return source != "implied"
 
 
 class RuleEngine:
@@ -65,7 +101,7 @@ class RuleEngine:
 
     async def compute_entities(
         self, stored_data: dict[str, Any] | None = None
-    ) -> tuple[list[str], list[str], set[str], list[str], dict[str, list[str]]]:
+    ) -> ComputeEntitiesResult:
         """Compute entity exposure based on rules.
 
         Priority (exclusions always win over any inclusion):
@@ -81,8 +117,12 @@ class RuleEngine:
             stored_data: Configuration data to use. Defaults to stored data.
 
         Returns:
-            Tuple of (exposed, excluded, explicit_exclusions, unset, exclusion_reasons).
-            exclusion_reasons maps reason type to list of entity IDs.
+            ComputeEntitiesResult containing exposed/excluded entities and reasons.
+
+        Example:
+            >>> result = await rule_engine.compute_entities()
+            >>> print(f"Exposed: {len(result.exposed)}")
+            >>> print(f"Excluded by pattern: {result.exclusion_reasons['pattern']}")
         """
         if stored_data is None:
             stored_data = self._stored_data
@@ -104,32 +144,25 @@ class RuleEngine:
             device.id: device.area_id for device in device_reg.devices.values()
         }
 
-        # Helper to check if override is "selected" (explicit user choice)
-        # "implied" overrides are computed from device state and should be ignored
-        # Legacy data without "source" is treated as "selected" for backwards compat
-        def is_selected_override(data: dict[str, Any]) -> bool:
-            source = data.get("source", "selected")  # Legacy = selected
-            return source != "implied"
-
         expose_devices = {
             did
             for did, data in device_overrides.items()
-            if data.get(CONF_EXPOSE) is True and is_selected_override(data)
+            if data.get(CONF_EXPOSE) is True and _is_selected_override(data)
         }
         exclude_devices = {
             did
             for did, data in device_overrides.items()
-            if data.get(CONF_EXPOSE) is False and is_selected_override(data)
+            if data.get(CONF_EXPOSE) is False and _is_selected_override(data)
         }
         exclude_entities_set = {
             eid
             for eid, data in entity_overrides.items()
-            if data.get(CONF_EXPOSE) is False and is_selected_override(data)
+            if data.get(CONF_EXPOSE) is False and _is_selected_override(data)
         }
         expose_entities_set = {
             eid
             for eid, data in entity_overrides.items()
-            if data.get(CONF_EXPOSE) is True and is_selected_override(data)
+            if data.get(CONF_EXPOSE) is True and _is_selected_override(data)
         }
 
         exposed_entities: list[str] = []
@@ -209,12 +242,12 @@ class RuleEngine:
             len(explicit_exclusions),
             len(unset_entities),
         )
-        return (
-            exposed_entities,
-            excluded_entities,
-            explicit_exclusions,
-            unset_entities,
-            exclusion_reasons,
+        return ComputeEntitiesResult(
+            exposed=exposed_entities,
+            excluded=excluded_entities,
+            explicit_exclusions=explicit_exclusions,
+            unset=unset_entities,
+            exclusion_reasons=exclusion_reasons,
         )
 
     def _get_entity_area(
@@ -301,8 +334,8 @@ class RuleEngine:
             errors.append(f"Conflict: `{conflict}` is in both expose and exclude")
 
         # Check that at least one entity would be exposed
-        exposed, _, _, _, _ = await self.compute_entities(stored_data)
-        if not exposed:
+        result = await self.compute_entities(stored_data)
+        if not result.exposed:
             errors.append("No entities will be exposed — add domains or entities")
 
         if errors:
@@ -324,22 +357,20 @@ class RuleEngine:
         if stored_data is None:
             stored_data = self._stored_data
 
-        exposed, excluded, _, _, exclusion_reasons = await self.compute_entities(
-            stored_data
-        )
-        exposed_by_domain = group_entities_by_domain(exposed)
-        excluded_by_domain = group_entities_by_domain(excluded)
+        result = await self.compute_entities(stored_data)
+        exposed_by_domain = group_entities_by_domain(result.exposed)
+        excluded_by_domain = group_entities_by_domain(result.excluded)
 
         return {
-            "total_exposed": len(exposed),
-            "total_excluded": len(excluded),
-            "exposed_entities": exposed,
-            "excluded_entities": excluded,
+            "total_exposed": len(result.exposed),
+            "total_excluded": len(result.excluded),
+            "exposed_entities": result.exposed,
+            "excluded_entities": result.excluded,
             "exposed_by_domain": exposed_by_domain,
             "excluded_by_domain": excluded_by_domain,
-            "exclusion_reasons": exclusion_reasons,
-            "sample_exposed": exposed[:20],
-            "sample_excluded": excluded[:10],
+            "exclusion_reasons": result.exclusion_reasons,
+            "sample_exposed": result.exposed[:SAMPLE_EXPOSED_LIMIT],
+            "sample_excluded": result.excluded[:SAMPLE_EXCLUDED_LIMIT],
         }
 
     def get_entity_exposure_reason(
@@ -355,17 +386,12 @@ class RuleEngine:
         entity_overrides = stored_data.get(CONF_ENTITY_OVERRIDES, {})
         device_overrides = stored_data.get(CONF_DEVICE_OVERRIDES, {})
 
-        domain = entity_id.split(".")[0]
-
-        # Helper to check if override is "selected" (explicit user choice)
-        def is_selected(data: dict[str, Any]) -> bool:
-            source = data.get("source", "selected")
-            return source != "implied"
+        domain = entity_id.split(".", maxsplit=1)[0]
 
         # Check explicit entity exclusion first (absolute priority)
         if entity_id in entity_overrides:
             override = entity_overrides[entity_id]
-            if override.get(CONF_EXPOSE) is False and is_selected(override):
+            if override.get(CONF_EXPOSE) is False and _is_selected_override(override):
                 return "Explicitly excluded (entity exclusion - highest priority)"
 
         # Check device exclusion (absolute priority)
@@ -375,7 +401,9 @@ class RuleEngine:
             device_id = entity_entry.device_id
             if device_id in device_overrides:
                 override = device_overrides[device_id]
-                if override.get(CONF_EXPOSE) is False and is_selected(override):
+                if override.get(CONF_EXPOSE) is False and _is_selected_override(
+                    override
+                ):
                     return (
                         "Excluded via device rule (device exclusion - highest priority)"
                     )
@@ -383,7 +411,7 @@ class RuleEngine:
         # Check explicit entity inclusion
         if entity_id in entity_overrides:
             override = entity_overrides[entity_id]
-            if override.get(CONF_EXPOSE) is True and is_selected(override):
+            if override.get(CONF_EXPOSE) is True and _is_selected_override(override):
                 return "Explicitly set to expose (individual entity rule)"
 
         # Check device inclusion
@@ -391,7 +419,9 @@ class RuleEngine:
             device_id = entity_entry.device_id
             if device_id in device_overrides:
                 override = device_overrides[device_id]
-                if override.get(CONF_EXPOSE) is True and is_selected(override):
+                if override.get(CONF_EXPOSE) is True and _is_selected_override(
+                    override
+                ):
                     return "Exposed via device rule (all entities from this device)"
 
         # Check domain

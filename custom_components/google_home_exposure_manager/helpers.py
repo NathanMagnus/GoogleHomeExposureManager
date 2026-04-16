@@ -63,7 +63,13 @@ def validate_glob_pattern(pattern: str) -> bool:
                 return False
 
         return bracket_depth == 0
-    except Exception:
+    except (ValueError, TypeError) as ex:
+        # Log specific errors for debugging
+        import logging
+
+        logging.getLogger(__name__).debug(
+            "Pattern validation failed for '%s': %s", pattern, ex
+        )
         return False
 
 
@@ -79,7 +85,13 @@ def match_glob_pattern(value: str, pattern: str) -> bool:
     """
     try:
         return fnmatch.fnmatch(value, pattern)
-    except Exception:
+    except (ValueError, TypeError) as ex:
+        # Log specific errors for debugging
+        import logging
+
+        logging.getLogger(__name__).debug(
+            "Pattern matching failed for '%s' against '%s': %s", value, pattern, ex
+        )
         return False
 
 

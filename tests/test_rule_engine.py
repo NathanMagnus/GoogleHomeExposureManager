@@ -30,21 +30,21 @@ class TestRuleEngineCompute:
         }
 
         engine = RuleEngine(mock_hass, stored_data)
-        exposed, excluded, explicit, unset, reasons = await engine.compute_entities()
+        result = await engine.compute_entities()
 
         # All lights should be exposed (except disabled/diagnostic)
-        assert "light.living_room" in exposed
-        assert "light.kitchen" in exposed
-        assert "light.garage" in exposed
+        assert "light.living_room" in result.exposed
+        assert "light.kitchen" in result.exposed
+        assert "light.garage" in result.exposed
 
         # Switches should be unset (not in expose_domains)
-        assert "switch.office" in unset
-        assert "switch.hidden" in unset
+        assert "switch.office" in result.unset
+        assert "switch.hidden" in result.unset
 
         # Disabled and diagnostic entities should not appear
-        assert "light.disabled" not in exposed
-        assert "light.disabled" not in excluded
-        assert "light.disabled" not in unset
+        assert "light.disabled" not in result.exposed
+        assert "light.disabled" not in result.excluded
+        assert "light.disabled" not in result.unset
 
     @pytest.mark.asyncio
     async def test_area_exclusion(
@@ -64,16 +64,16 @@ class TestRuleEngineCompute:
         }
 
         engine = RuleEngine(mock_hass, stored_data)
-        exposed, excluded, _, _, reasons = await engine.compute_entities()
+        result = await engine.compute_entities()
 
         # Garage light should be excluded
-        assert "light.garage" in excluded
-        assert "light.garage" not in exposed
-        assert "light.garage" in reasons["area"]
+        assert "light.garage" in result.excluded
+        assert "light.garage" not in result.exposed
+        assert "light.garage" in result.exclusion_reasons["area"]
 
         # Other lights should be exposed
-        assert "light.living_room" in exposed
-        assert "light.kitchen" in exposed
+        assert "light.living_room" in result.exposed
+        assert "light.kitchen" in result.exposed
 
     @pytest.mark.asyncio
     async def test_pattern_exclusion(
@@ -93,17 +93,17 @@ class TestRuleEngineCompute:
         }
 
         engine = RuleEngine(mock_hass, stored_data)
-        exposed, excluded, _, _, reasons = await engine.compute_entities()
+        result = await engine.compute_entities()
 
         # Pattern matches should be excluded
-        assert "light.something_test" in excluded
-        assert "sensor.battery_test" in excluded
-        assert "light.something_test" in reasons["pattern"]
-        assert "sensor.battery_test" in reasons["pattern"]
+        assert "light.something_test" in result.excluded
+        assert "sensor.battery_test" in result.excluded
+        assert "light.something_test" in result.exclusion_reasons["pattern"]
+        assert "sensor.battery_test" in result.exclusion_reasons["pattern"]
 
         # Non-matching entities should be exposed
-        assert "light.living_room" in exposed
-        assert "sensor.temperature" in exposed
+        assert "light.living_room" in result.exposed
+        assert "sensor.temperature" in result.exposed
 
     @pytest.mark.asyncio
     async def test_entity_override_inclusion(
@@ -111,10 +111,10 @@ class TestRuleEngineCompute:
         mock_hass: MagicMock,
         mock_registries: None,
     ) -> None:
-        """Test explicit entity inclusion overrides domain rules."""
+        """Test result.explicit_exclusions entity inclusion overrides domain rules."""
         stored_data: dict[str, Any] = {
             "bulk_rules": {
-                "expose_domains": [],  # No domains exposed by default
+                "expose_domains": [],  # No domains result.exposed by default
                 "exclude_areas": [],
                 "exclude_patterns": [],
             },
@@ -125,13 +125,13 @@ class TestRuleEngineCompute:
         }
 
         engine = RuleEngine(mock_hass, stored_data)
-        exposed, _, _, unset, _ = await engine.compute_entities()
+        result = await engine.compute_entities()
 
         # Explicitly included entity should be exposed
-        assert "light.kitchen" in exposed
+        assert "light.kitchen" in result.exposed
 
         # Other lights should be unset (no domain rule)
-        assert "light.living_room" in unset
+        assert "light.living_room" in result.unset
 
     @pytest.mark.asyncio
     async def test_entity_override_exclusion_priority(
@@ -153,16 +153,16 @@ class TestRuleEngineCompute:
         }
 
         engine = RuleEngine(mock_hass, stored_data)
-        exposed, excluded, explicit, _, reasons = await engine.compute_entities()
+        result = await engine.compute_entities()
 
         # Explicitly excluded should not be exposed
-        assert "light.kitchen" in excluded
-        assert "light.kitchen" in explicit
-        assert "light.kitchen" not in exposed
-        assert "light.kitchen" in reasons["entity_override"]
+        assert "light.kitchen" in result.excluded
+        assert "light.kitchen" in result.explicit_exclusions
+        assert "light.kitchen" not in result.exposed
+        assert "light.kitchen" in result.exclusion_reasons["entity_override"]
 
         # Other lights should be exposed
-        assert "light.living_room" in exposed
+        assert "light.living_room" in result.exposed
 
     @pytest.mark.asyncio
     async def test_device_override_inclusion(
@@ -184,10 +184,10 @@ class TestRuleEngineCompute:
         }
 
         engine = RuleEngine(mock_hass, stored_data)
-        exposed, _, _, _, _ = await engine.compute_entities()
+        result = await engine.compute_entities()
 
         # Entity on included device should be exposed
-        assert "light.living_room" in exposed
+        assert "light.living_room" in result.exposed
 
     @pytest.mark.asyncio
     async def test_device_override_exclusion_priority(
@@ -209,13 +209,13 @@ class TestRuleEngineCompute:
         }
 
         engine = RuleEngine(mock_hass, stored_data)
-        exposed, excluded, explicit, _, reasons = await engine.compute_entities()
+        result = await engine.compute_entities()
 
         # Entity on excluded device should be excluded
-        assert "light.excluded_device" in excluded
-        assert "light.excluded_device" in explicit
-        assert "light.excluded_device" not in exposed
-        assert "light.excluded_device" in reasons["device_override"]
+        assert "light.excluded_device" in result.excluded
+        assert "light.excluded_device" in result.explicit_exclusions
+        assert "light.excluded_device" not in result.exposed
+        assert "light.excluded_device" in result.exclusion_reasons["device_override"]
 
 
 class TestRuleEngineValidation:
@@ -299,7 +299,7 @@ class TestRuleEngineExposureReason:
         mock_hass: MagicMock,
         mock_registries: None,
     ) -> None:
-        """Test reason for explicit entity exclusion."""
+        """Test reason for result.explicit_exclusions entity exclusion."""
         stored_data: dict[str, Any] = {
             "bulk_rules": {
                 "expose_domains": ["light"],
@@ -345,7 +345,7 @@ class TestRuleEngineExposureReason:
         mock_hass: MagicMock,
         mock_registries: None,
     ) -> None:
-        """Test reason when domain is not exposed."""
+        """Test reason when domain is not result.exposed."""
         stored_data: dict[str, Any] = {
             "bulk_rules": {
                 "expose_domains": ["light"],  # switch not included
@@ -384,8 +384,8 @@ class TestRuleEngineUpdateData:
         }
 
         engine = RuleEngine(mock_hass, initial_data)
-        exposed1, _, _, _, _ = await engine.compute_entities()
-        assert len(exposed1) == 0  # Nothing exposed
+        result1 = await engine.compute_entities()
+        assert len(result1.exposed) == 0  # Nothing exposed
 
         # Update data
         new_data: dict[str, Any] = {
@@ -399,5 +399,5 @@ class TestRuleEngineUpdateData:
         }
         engine.update_data(new_data)
 
-        exposed2, _, _, _, _ = await engine.compute_entities()
-        assert len(exposed2) > 0  # Now lights are exposed
+        result2 = await engine.compute_entities()
+        assert len(result2.exposed) > 0  # Now lights are exposed

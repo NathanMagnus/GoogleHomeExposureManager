@@ -6,11 +6,10 @@ Extracted from __init__.py to follow Single Responsibility Principle.
 
 from __future__ import annotations
 
-import logging
+from collections.abc import Callable, Coroutine
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, Final
-
-import voluptuous as vol
+import logging
+from typing import TYPE_CHECKING, Any, Final
 
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
@@ -20,6 +19,7 @@ from homeassistant.helpers import (
     entity_registry as er,
 )
 from homeassistant.helpers.storage import Store
+import voluptuous as vol
 
 from .const import (
     CONF_BACKUPS,
@@ -249,13 +249,7 @@ async def websocket_compute_preview(
     new_config: dict[str, Any] = msg["config"]
 
     try:
-        (
-            exposed,
-            excluded,
-            _,
-            unset,
-            exclusion_reasons,
-        ) = await rule_engine.compute_entities(new_config)
+        result = await rule_engine.compute_entities(new_config)
 
         # Get entity configs (aliases, names, rooms)
         new_entity_config = new_config.get(CONF_ENTITY_CONFIG, {})
@@ -263,7 +257,7 @@ async def websocket_compute_preview(
 
         # Build exposed entities with their configs
         exposed_with_config = []
-        for entity_id in exposed:
+        for entity_id in result.exposed:
             config = new_entity_config.get(entity_id, {})
             exposed_with_config.append(
                 {
@@ -323,17 +317,24 @@ async def websocket_compute_preview(
         connection.send_result(
             msg["id"],
             {
-                "exposed": exposed,
-                "excluded": excluded,
-                "unset": unset,
-                "exclusion_reasons": exclusion_reasons,
+                "exposed": result.exposed,
+                "excluded": result.excluded,
+                "unset": result.unset,
+                "exclusion_reasons": result.exclusion_reasons,
                 "exposed_with_config": exposed_with_config,
                 "config_changes": config_changes,
             },
         )
+    except ValueError as ex:
+        _LOGGER.warning("Invalid configuration for preview: %s", ex)
+        connection.send_error(
+            msg["id"], "invalid_config", f"Invalid configuration: {ex}"
+        )
     except Exception as ex:
-        _LOGGER.exception("Failed to compute preview")
-        connection.send_error(msg["id"], "compute_error", str(ex))
+        _LOGGER.exception("Failed to compute preview: %s", ex)
+        connection.send_error(
+            msg["id"], "compute_error", f"Failed to compute preview: {ex}"
+        )
 
 
 @websocket_api.websocket_command(
@@ -359,13 +360,7 @@ async def websocket_save_config(
 
     try:
         # Compute what to write
-        (
-            exposed,
-            excluded,
-            explicit_exclusions,
-            _,
-            _,
-        ) = await rule_engine.compute_entities(new_config)
+        result = await rule_engine.compute_entities(new_config)
 
         # Get entity_config (name, aliases, room)
         entity_config = new_config.get(CONF_ENTITY_CONFIG, {})
@@ -377,12 +372,12 @@ async def websocket_save_config(
 
         # Write entities file with entity_config
         await yaml_manager.write_entities_file(
-            exposed, excluded, explicit_exclusions, entity_config
+            result.exposed, result.excluded, result.explicit_exclusions, entity_config
         )
         _LOGGER.info(
             "Saved configuration: %d entities exposed, %d excluded, %d with custom config",
-            len(exposed),
-            len(excluded),
+            len(result.exposed),
+            len(result.excluded),
             len(entity_config),
         )
 
@@ -393,9 +388,19 @@ async def websocket_save_config(
 
         connection.send_result(msg["id"], {"success": True})
 
+    except OSError as ex:
+        _LOGGER.error("Failed to write configuration file: %s", ex)
+        connection.send_error(
+            msg["id"], "write_error", f"Failed to write configuration: {ex}"
+        )
+    except ValueError as ex:
+        _LOGGER.warning("Invalid configuration: %s", ex)
+        connection.send_error(
+            msg["id"], "invalid_config", f"Invalid configuration: {ex}"
+        )
     except Exception as ex:
-        _LOGGER.exception("Failed to save config")
-        connection.send_error(msg["id"], "save_error", str(ex))
+        _LOGGER.exception("Failed to save configuration: %s", ex)
+        connection.send_error(msg["id"], "save_error", f"Failed to save: {ex}")
 
 
 @websocket_api.websocket_command(
@@ -447,6 +452,14 @@ async def websocket_handle_migration(
 
         connection.send_result(msg["id"], {"success": True})
 
+    except FileNotFoundError as ex:
+        _LOGGER.error("Migration source file not found: %s", ex)
+        connection.send_error(
+            msg["id"], "file_not_found", f"Source file not found: {ex}"
+        )
+    except OSError as ex:
+        _LOGGER.error("Failed to write during migration: %s", ex)
+        connection.send_error(msg["id"], "write_error", f"Migration write failed: {ex}")
     except Exception as ex:
-        _LOGGER.exception("Migration failed")
-        connection.send_error(msg["id"], "migration_error", str(ex))
+        _LOGGER.exception("Migration failed: %s", ex)
+        connection.send_error(msg["id"], "migration_error", f"Migration failed: {ex}")

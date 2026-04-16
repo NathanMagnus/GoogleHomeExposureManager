@@ -388,14 +388,16 @@ class TestOptionsFlow:
 
     async def test_options_flow_with_rule_engine_stats(self) -> None:
         """Test options flow displays stats from rule engine."""
+        from custom_components.google_home_exposure_manager.rule_engine import ComputeEntitiesResult
+
         mock_rule_engine = MagicMock()
         mock_rule_engine.compute_entities = AsyncMock(
-            return_value=(
-                ["light.one", "light.two"],  # exposed
-                ["sensor.excluded"],  # excluded
-                set(),  # explicit_exclusions
-                ["fan.unset"],  # unset
-                {},  # exclusion_reasons
+            return_value=ComputeEntitiesResult(
+                exposed=["light.one", "light.two"],
+                excluded=["sensor.excluded"],
+                explicit_exclusions=set(),
+                unset=["fan.unset"],
+                exclusion_reasons={},
             )
         )
 
@@ -422,7 +424,7 @@ class TestOptionsFlow:
             assert "stats_text" in result["description_placeholders"]
             # Stats should show: 2 exposed, 1 excluded, 1 unset
             stats = result["description_placeholders"]["stats_text"]
-            assert "2" in stats  # exposed count
+            assert "2" in stats  # result.exposed count
 
 
 class TestDetectGoogleAssistant:
