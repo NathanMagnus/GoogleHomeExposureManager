@@ -23,11 +23,7 @@ from .const import (
     CONF_EXPOSE_DOMAINS,
     SUPPORTED_DOMAINS,
 )
-from .helpers import (
-    group_entities_by_domain,
-    match_glob_pattern,
-    validate_glob_pattern,
-)
+from .helpers import group_entities_by_domain, match_glob_pattern, validate_glob_pattern
 
 _LOGGER: Final = logging.getLogger(__name__)
 
@@ -390,7 +386,7 @@ class RuleEngine:
         entity_overrides = stored_data.get(CONF_ENTITY_OVERRIDES, {})
         device_overrides = stored_data.get(CONF_DEVICE_OVERRIDES, {})
 
-        domain = entity_id.split(".")[0]
+        domain = entity_id.split(".", maxsplit=1)[0]
 
         # Check explicit entity exclusion first (absolute priority)
         if entity_id in entity_overrides:
@@ -405,7 +401,9 @@ class RuleEngine:
             device_id = entity_entry.device_id
             if device_id in device_overrides:
                 override = device_overrides[device_id]
-                if override.get(CONF_EXPOSE) is False and _is_selected_override(override):
+                if override.get(CONF_EXPOSE) is False and _is_selected_override(
+                    override
+                ):
                     return (
                         "Excluded via device rule (device exclusion - highest priority)"
                     )
@@ -421,7 +419,9 @@ class RuleEngine:
             device_id = entity_entry.device_id
             if device_id in device_overrides:
                 override = device_overrides[device_id]
-                if override.get(CONF_EXPOSE) is True and _is_selected_override(override):
+                if override.get(CONF_EXPOSE) is True and _is_selected_override(
+                    override
+                ):
                     return "Exposed via device rule (all entities from this device)"
 
         # Check domain

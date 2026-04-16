@@ -66,6 +66,7 @@ def validate_glob_pattern(pattern: str) -> bool:
     except (ValueError, TypeError) as ex:
         # Log specific errors for debugging
         import logging
+
         logging.getLogger(__name__).debug(
             "Pattern validation failed for '%s': %s", pattern, ex
         )
@@ -87,6 +88,7 @@ def match_glob_pattern(value: str, pattern: str) -> bool:
     except (ValueError, TypeError) as ex:
         # Log specific errors for debugging
         import logging
+
         logging.getLogger(__name__).debug(
             "Pattern matching failed for '%s' against '%s': %s", value, pattern, ex
         )

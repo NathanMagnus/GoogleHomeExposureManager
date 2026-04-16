@@ -1,5 +1,20 @@
 # Ruff configuration for Google Home Exposure Manager
 
+# Same as Home Assistant
+line-length = 88
+target-version = "py312"
+
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".git",
+    ".github",
+    ".pytest_cache",
+    "__pycache__",
+    "build",
+    "dist",
+]
+
+[lint]
 # Enable pycodestyle (`E`) and Pyflakes (`F`) codes by default.
 select = [
     "E",    # pycodestyle errors
@@ -28,35 +43,22 @@ ignore = [
     "PLR2004", # magic value comparison
     "PLR0911", # too many return statements
     "PLR0912", # too many branches
+    "PLR0915", # too many statements
     "RET504",  # unnecessary variable assignment before return
     "PLC0415", # import should be at top-level (intentional for optional dependencies)
     "DTZ005",  # datetime.now() without tz (Home Assistant handles this)
 ]
 
-# Exclude a variety of commonly ignored directories.
-exclude = [
-    ".git",
-    ".github",
-    ".pytest_cache",
-    "__pycache__",
-    "build",
-    "dist",
-]
-
-# Same as Home Assistant
-line-length = 88
-target-version = "py312"
-
-[per-file-ignores]
+[lint.per-file-ignores]
 # Allow print statements in tests
 "tests/*" = ["T20"]
 
-[isort]
+[lint.isort]
 # Use Home Assistant's isort configuration
 force-sort-within-sections = true
 known-first-party = ["custom_components.google_home_exposure_manager"]
 combine-as-imports = true
 split-on-trailing-comma = false
 
-[mccabe]
+[lint.mccabe]
 max-complexity = 15

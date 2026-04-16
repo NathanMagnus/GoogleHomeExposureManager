@@ -7,8 +7,6 @@ import logging
 from pathlib import Path
 from typing import Any, Final
 
-import voluptuous as vol
-
 from homeassistant.config_entries import (
     ConfigEntry,
     ConfigFlow,
@@ -23,6 +21,7 @@ from homeassistant.helpers.selector import (
     TextSelectorConfig,
     TextSelectorType,
 )
+import voluptuous as vol
 
 from .const import (
     CONF_AUTO_ALIASES,
@@ -129,9 +128,7 @@ class GoogleHomeExposureManagerConfigFlow(ConfigFlow, domain=DOMAIN):
                     self._service_account_data = json.loads(service_account_json)
 
                     # Validate it looks like a service account
-                    if not isinstance(self._service_account_data, dict):
-                        errors["base"] = "invalid_json"
-                    elif (
+                    if not isinstance(self._service_account_data, dict) or (
                         "type" in self._service_account_data
                         and self._service_account_data["type"] != "service_account"
                     ):

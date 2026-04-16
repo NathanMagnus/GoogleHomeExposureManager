@@ -6,11 +6,10 @@ Extracted from __init__.py to follow Single Responsibility Principle.
 
 from __future__ import annotations
 
-import logging
+from collections.abc import Callable, Coroutine
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Callable, Coroutine, Final
-
-import voluptuous as vol
+import logging
+from typing import TYPE_CHECKING, Any, Final
 
 from homeassistant.components import websocket_api
 from homeassistant.core import HomeAssistant, callback
@@ -20,6 +19,7 @@ from homeassistant.helpers import (
     entity_registry as er,
 )
 from homeassistant.helpers.storage import Store
+import voluptuous as vol
 
 from .const import (
     CONF_BACKUPS,
@@ -395,7 +395,9 @@ async def websocket_save_config(
         )
     except ValueError as ex:
         _LOGGER.warning("Invalid configuration: %s", ex)
-        connection.send_error(msg["id"], "invalid_config", f"Invalid configuration: {ex}")
+        connection.send_error(
+            msg["id"], "invalid_config", f"Invalid configuration: {ex}"
+        )
     except Exception as ex:
         _LOGGER.exception("Failed to save configuration: %s", ex)
         connection.send_error(msg["id"], "save_error", f"Failed to save: {ex}")

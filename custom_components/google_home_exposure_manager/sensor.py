@@ -5,14 +5,11 @@ Provides statistics about exposed entities for display on the integration page.
 
 from __future__ import annotations
 
-import logging
 from datetime import datetime
+import logging
 from typing import TYPE_CHECKING, Any, Final
 
-from homeassistant.components.sensor import (
-    SensorEntity,
-    SensorStateClass,
-)
+from homeassistant.components.sensor import SensorEntity, SensorStateClass
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
@@ -178,7 +175,9 @@ class ExcludedEntitiesSensor(ExposureBaseSensor):
             # Group by domain for attributes using shared helper
             domains = {
                 domain: len(entities)
-                for domain, entities in group_entities_by_domain(result.excluded).items()
+                for domain, entities in group_entities_by_domain(
+                    result.excluded
+                ).items()
             }
 
             self._attr_extra_state_attributes = {

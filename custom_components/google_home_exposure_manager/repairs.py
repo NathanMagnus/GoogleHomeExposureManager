@@ -4,12 +4,11 @@ from __future__ import annotations
 
 from typing import Any
 
-import voluptuous as vol
-
 from homeassistant import data_entry_flow
 from homeassistant.components.repairs import ConfirmRepairFlow, RepairsFlow
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers import issue_registry as ir
+import voluptuous as vol
 
 from .const import DOMAIN
 
