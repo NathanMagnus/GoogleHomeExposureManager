@@ -14,7 +14,7 @@ export function renderBulkRules(context) {
   const domains = [
     "light", "switch", "cover", "fan", "climate", "lock", 
     "sensor", "binary_sensor", "camera", "media_player", 
-    "vacuum", "humidifier", "scene", "script"
+    "vacuum", "humidifier", "scene", "script", "button", "input_button"
   ];
   const selectedDomains = context._pendingConfig?.bulk_rules?.expose_domains || [];
   const selectedAreas = context._pendingConfig?.bulk_rules?.exclude_areas || [];

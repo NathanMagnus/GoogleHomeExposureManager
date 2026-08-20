@@ -99,6 +99,8 @@ class TestGetDomainIcon:
         assert get_domain_icon("switch") == "🔌"
         assert get_domain_icon("climate") == "🌡️"
         assert get_domain_icon("lock") == "🔒"
+        assert get_domain_icon("button") == "🔘"
+        assert get_domain_icon("input_button") == "🔘"
 
     def test_unknown_domain(self) -> None:
         """Test default icon for unknown domains."""

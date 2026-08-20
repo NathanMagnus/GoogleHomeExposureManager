@@ -80,6 +80,10 @@ class TestConstants:
         for domain in expected:
             assert domain in SUPPORTED_DOMAINS
 
+        # button and input_button should be supported (Google Assistant scenes)
+        for domain in ["button", "input_button"]:
+            assert domain in SUPPORTED_DOMAINS
+
     def test_default_booleans(self) -> None:
         """Test boolean defaults."""
         assert isinstance(DEFAULT_AUTO_SYNC, bool)
