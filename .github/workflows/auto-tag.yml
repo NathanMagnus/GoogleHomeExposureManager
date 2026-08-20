@@ -5,6 +5,21 @@ on:
     branches: [main]
     paths:
       - "custom_components/google_home_exposure_manager/manifest.json"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (defaults to manifest version)"
+        required: false
+        type: string
+      prerelease:
+        description: "Publish as a prerelease"
+        required: true
+        default: "auto"
+        type: choice
+        options:
+          - "auto"
+          - "true"
+          - "false"
 
 permissions:
   contents: write
@@ -21,7 +36,10 @@ jobs:
       - name: Read version from manifest
         id: version
         run: |
-          VERSION=$(jq -r '.version' custom_components/google_home_exposure_manager/manifest.json)
+          MANIFEST_VERSION=$(jq -r '.version' custom_components/google_home_exposure_manager/manifest.json)
+          INPUT_VERSION="${{ inputs.version }}"
+          VERSION="${INPUT_VERSION:-$MANIFEST_VERSION}"
+          VERSION="${VERSION#v}"
           echo "version=$VERSION" >> "$GITHUB_OUTPUT"
           echo "tag=v$VERSION" >> "$GITHUB_OUTPUT"
 
@@ -34,12 +52,22 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create prerelease
+      - name: Create release
         if: steps.tag_exists.outputs.exists == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          PRERELEASE="${{ inputs.prerelease }}"
+          RELEASE_ARGS=()
+          NOTES="Release ${{ steps.version.outputs.tag }}"
+
+          if [[ "$PRERELEASE" == "true" || ( "$PRERELEASE" != "false" && ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ) ]]; then
+            RELEASE_ARGS+=(--prerelease)
+            NOTES="Prerelease ${{ steps.version.outputs.tag }}"
+          fi
+
           gh release create "${{ steps.version.outputs.tag }}" \
             --title "${{ steps.version.outputs.tag }}" \
-            --notes "Prerelease ${{ steps.version.outputs.tag }}" \
-            --prerelease
+            --notes "$NOTES" \
+            "${RELEASE_ARGS[@]}"
