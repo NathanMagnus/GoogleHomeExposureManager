@@ -11,5 +11,5 @@
   "loggers": ["custom_components.google_home_exposure_manager"],
   "requirements": ["ruamel.yaml>=0.18.0"],
   "single_config_entry": true,
-  "version": "0.3.0b0"
+  "version": "0.3.0b2"
 }
