@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.0] - 2026-08-20
+
+### Added
+- Support for exposing `button` entities to Google Assistant
+- Support for exposing `input_button` entities to Google Assistant
+
 ## [0.3.0b2] - 2026-08-20
 
 ### Added

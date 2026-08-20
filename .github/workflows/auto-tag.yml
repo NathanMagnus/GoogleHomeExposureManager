@@ -34,12 +34,21 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Create prerelease
+      - name: Create release
         if: steps.tag_exists.outputs.exists == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          RELEASE_ARGS=()
+          NOTES="Release ${{ steps.version.outputs.tag }}"
+
+          if [[ ! "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            RELEASE_ARGS+=(--prerelease)
+            NOTES="Prerelease ${{ steps.version.outputs.tag }}"
+          fi
+
           gh release create "${{ steps.version.outputs.tag }}" \
             --title "${{ steps.version.outputs.tag }}" \
-            --notes "Prerelease ${{ steps.version.outputs.tag }}" \
-            --prerelease
+            --notes "$NOTES" \
+            "${RELEASE_ARGS[@]}"
